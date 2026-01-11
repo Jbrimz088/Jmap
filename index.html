@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GTA V Style Map Locator</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    #map-container {
+      width: 100vw;
+      height: 100vh;
+      background: url('https://i.imgur.com/VKJXtDg.jpg') no-repeat center center;
+      background-size: cover;
+      position: relative;
+    }
+    #marker {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      border-radius: 50%;
+      border: 2px solid white;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+    }
+    #coords {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      color: white;
+      background: rgba(0,0,0,0.6);
+      padding: 5px 10px;
+      font-family: monospace;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="map-container">
+    <div id="marker"></div>
+    <div id="coords">Locating...</div>
+  </div>
+
+  <script>
+    // Fake GPS-to-GTA map projection
+    function convertToGTACoords(lat, lon) {
+      // This just maps lat/lon ranges to GTA V map dimensions
+      let x = ((lon + 180) / 360) * window.innerWidth;
+      let y = ((90 - lat) / 180) * window.innerHeight;
+      return { x, y };
+    }
+
+    function updateLocation(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      const { x, y } = convertToGTACoords(lat, lon);
+      const marker = document.getElementById("marker");
+      const coords = document.getElementById("coords");
+
+      marker.style.left = `${x}px`;
+      marker.style.top = `${y}px`;
+      coords.innerText = `Lat: ${lat.toFixed(5)} | Lon: ${lon.toFixed(5)}`;
+    }
+
+    function errorLocation() {
+      alert("Failed to get your location.");
+    }
+
+    navigator.geolocation.getCurrentPosition(updateLocation, errorLocation);
+  </script>
+</body>
+</html>
