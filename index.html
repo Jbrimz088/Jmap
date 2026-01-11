@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GTA V GPS Map</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: black;
+  font-family: monospace;
+}
+
+#map {
+  width: 100vw;
+  height: 100vh;
+  background: url("https://i.imgur.com/VKJXtDg.jpg") no-repeat center center;
+  background-size: cover;
+  position: relative;
+}
+
+#marker {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: red;
+  border: 2px solid white;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#ui {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 20;
+}
+
+button {
+  padding: 10px 14px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: none;
+}
+
+#coords {
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border-radius: 6px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="map">
+  <div id="marker"></div>
+
+  <div id="ui">
+    <button id="locBtn">📍 Get Location</button>
+    <div id="coords">Waiting…</div>
+  </div>
+</div>
+
+<script>
+const marker = document.getElementById("marker");
+const coords = document.getElementById("coords");
+
+function convertToGTACoords(lat, lon) {
+  const x = ((lon + 180) / 360) * window.innerWidth;
+  const y = ((90 - lat) / 180) * window.innerHeight;
+  return { x, y };
+}
+
+document.getElementById("locBtn").onclick = () => {
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+
+      const gta = convertToGTACoords(lat, lon);
+      marker.style.left = gta.x + "px";
+      marker.style.top = gta.y + "px";
+
+      coords.textContent =
+        `Lat ${lat.toFixed(5)} | Lon ${lon.toFixed(5)}`;
+    },
+    err => {
+      alert("Location blocked or unavailable");
+      console.error(err);
+    },
+    { enableHighAccuracy: true }
+  );
+};
+</script>
+
+</body>
+</html>
